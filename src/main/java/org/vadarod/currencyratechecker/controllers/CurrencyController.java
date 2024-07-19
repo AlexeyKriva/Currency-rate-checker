@@ -23,7 +23,6 @@ public class CurrencyController {
 
     @PostMapping("/load-currency-rates/{ondate}")
     public ResponseEntity<String> loadCurrencyRates(@PathVariable("ondate") String date) {
-        System.out.println("Date" + date);
         try {
             LocalDate dateTime = LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_PATTERN));
             boolean success = currencyService.loadCurrencyRates(dateTime.getYear(), dateTime.getMonth().getValue(), dateTime.getDayOfMonth());
@@ -38,13 +37,18 @@ public class CurrencyController {
     }
 
     @GetMapping("/get-currency-rate/{ondate}/{curId}")
-    public ResponseEntity<CurrencyDto> getCurrencyRate(@PathVariable("ondate") LocalDate date,
+    public ResponseEntity<CurrencyDto> getCurrencyRate(@PathVariable("ondate") String date,
                                                        @PathVariable("curId") int curId) {
-        CurrencyDto currencyDto = currencyService.findCurrencyDtoRateByDateAndCurId(date, curId);
-        if (currencyDto != null) {
-            return ResponseEntity.ok(currencyDto);
-        } else {
-            return ResponseEntity.notFound().build();
+        try {
+            LocalDate dateTime = LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_PATTERN));
+            CurrencyDto currencyDto = currencyService.findCurrencyDtoRateByDateAndCurId(dateTime, curId);
+            if (currencyDto != null) {
+                return ResponseEntity.ok(currencyDto);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (DateTimeParseException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }
