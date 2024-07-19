@@ -10,6 +10,7 @@ import org.vadarod.currencyratechecker.entities.Currency;
 import org.vadarod.currencyratechecker.entities.CurrencyDto;
 import org.vadarod.currencyratechecker.repositories.CurrencyRepository;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
 
@@ -19,8 +20,6 @@ public class CurrencyService {
     private CurrencyRepository currencyRepository;
     @Autowired
     private NbrbClient nbrbClient;
-    @Autowired
-    private DateService dateService;
 
     public boolean loadCurrencyRates() {
         for (int currentYear = START_YEAR; currentYear <= END_YEAR; currentYear++) {
@@ -44,6 +43,17 @@ public class CurrencyService {
         return true;
     }
 
+    public boolean loadCurrencyRates(int year, int month, int day) {
+        if (currencyRepository.existsCurrencyByDate(LocalDateTime.of(year, month, day, 0, 0, 0))) {
+            return true;
+        } else {
+            List<CurrencyDto> currencyRatesFromNbrbApi =
+                    nbrbClient.getCurrencyRatesByDate(formatDate(year, month, day),
+                            PERIODICITY);
+            return saveCurrencyDtoRates(currencyRatesFromNbrbApi);
+        }
+    }
+
     private Currency fromCurrencyDtoToCurrency(CurrencyDto currencyDto) {
         Currency currency = new Currency();
         currency.setCurId(currencyDto.getCurId());
@@ -55,14 +65,16 @@ public class CurrencyService {
         return currency;
     }
 
-    public void saveCurrencyDtoRates(List<CurrencyDto> currencyRatesFromNbrbApi) {
+    public boolean saveCurrencyDtoRates(List<CurrencyDto> currencyRatesFromNbrbApi) {
         for (CurrencyDto currencyDto: currencyRatesFromNbrbApi) {
             Currency currency = fromCurrencyDtoToCurrency(currencyDto);
             saveCurrencyRate(currency);
         }
+        return !currencyRatesFromNbrbApi.isEmpty();
     }
 
-    public void saveCurrencyRate(Currency currency) {
+    public boolean saveCurrencyRate(Currency currency) {
         currencyRepository.save(currency);
+        return true;
     }
 }
