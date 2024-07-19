@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.vadarod.currencyratechecker.entities.Currency;
+import org.vadarod.currencyratechecker.entities.CurrencyDto;
 import org.vadarod.currencyratechecker.services.CurrencyService;
 
 import java.time.LocalDate;
@@ -22,6 +23,17 @@ public class CurrencyController {
             return ResponseEntity.ok("Currency rates were successfully loaded for date: " + date);
         } else {
             return ResponseEntity.badRequest().body("Currency rates were not successfully loaded for date: " + date);
+        }
+    }
+
+    @GetMapping("/get-currency-rate/{ondate}/{curId}")
+    public ResponseEntity<CurrencyDto> getCurrencyRate(@PathVariable("ondate") LocalDate date,
+                                                    @PathVariable("curId") int curId) {
+        CurrencyDto currencyDto = currencyService.findCurrencyDtoRateByDateAndCurId(date, curId);
+        if (currencyDto != null) {
+            return ResponseEntity.ok(currencyDto);
+        } else {
+            return ResponseEntity.notFound().build();
         }
     }
 }
