@@ -20,7 +20,8 @@ public class JpaConfig {
 
         Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        jpaProperties.put("hibernate.hdm2ddl.auto", "create-drop");
+        jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");
+
         jpaProperties.put("hibernate.show_sql", "true");
         jpaProperties.put("hibernate.format_sql", "true");
 

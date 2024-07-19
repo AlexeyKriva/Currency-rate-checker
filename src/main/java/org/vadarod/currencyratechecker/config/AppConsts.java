@@ -5,9 +5,9 @@ import java.time.Month;
 import java.time.Year;
 
 public class AppConsts {
-    public static final int START_YEAR = 2000;
-    public static final int START_MONTH = 1;
-    public static final int START_DAY = 1;
+    public static final int START_YEAR = 2024;
+    public static final int START_MONTH = 7;
+    public static final int START_DAY = 18;
     public static final int END_YEAR = LocalDate.now().getYear();
     public static final int END_MONTH = LocalDate.now().getMonthValue();
     public static final int END_DAY = LocalDate.now().getDayOfMonth();

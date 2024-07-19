@@ -36,6 +36,8 @@ public class CurrencyService {
                     List<CurrencyDto> currencyRatesFromNbrbApi =
                             nbrbClient.getCurrencyRatesByDate(formatDate(currentYear, currentMonth, currentDay),
                             PERIODICITY);
+                    System.out.println(currencyRatesFromNbrbApi);
+                    saveCurrencyDtoRates(currencyRatesFromNbrbApi);
                 }
             }
         }
