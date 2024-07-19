@@ -10,9 +10,11 @@ import org.vadarod.currencyratechecker.entities.Currency;
 import org.vadarod.currencyratechecker.entities.CurrencyDto;
 import org.vadarod.currencyratechecker.repositories.CurrencyRepository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CurrencyService {
@@ -65,6 +67,17 @@ public class CurrencyService {
         return currency;
     }
 
+    private CurrencyDto fromCurrencyToCurrencyDto(Currency currency) {
+        CurrencyDto currencyDto = new CurrencyDto();
+        currencyDto.setDate(currency.getDate());
+        currencyDto.setAbbreviation(currency.getAbbreviation());
+        currencyDto.setScale(currency.getScale());
+        currencyDto.setName(currency.getName());
+        currencyDto.setOfficialRate(currency.getOfficialRate());
+        currencyDto.setCurId(currency.getCurId());
+        return currencyDto;
+    }
+
     public boolean saveCurrencyDtoRates(List<CurrencyDto> currencyRatesFromNbrbApi) {
         for (CurrencyDto currencyDto: currencyRatesFromNbrbApi) {
             Currency currency = fromCurrencyDtoToCurrency(currencyDto);
@@ -76,5 +89,14 @@ public class CurrencyService {
     public boolean saveCurrencyRate(Currency currency) {
         currencyRepository.save(currency);
         return true;
+    }
+
+    public CurrencyDto findCurrencyDtoRateByDateAndCurId(LocalDate date, int curId) {
+        Optional<Currency> currency = currencyRepository.findCurrencyByDateAndCurId(date.atStartOfDay(), curId);
+        if (currency.isPresent()) {
+            CurrencyDto currencyDto = fromCurrencyToCurrencyDto(currency.get());
+            return currencyDto;
+        }
+        return null;
     }
 }
