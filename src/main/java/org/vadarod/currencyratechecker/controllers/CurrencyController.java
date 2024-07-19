@@ -21,7 +21,7 @@ public class CurrencyController {
     @Autowired
     private CurrencyService currencyService;
 
-    @GetMapping("/load-currency-rates/{ondate}")
+    @PostMapping("/load-currency-rates/{ondate}")
     public ResponseEntity<String> loadCurrencyRates(@PathVariable("ondate") String date) {
         System.out.println("Date" + date);
         try {
