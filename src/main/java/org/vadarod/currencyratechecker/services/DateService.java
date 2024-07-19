@@ -6,7 +6,6 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 import static org.vadarod.currencyratechecker.config.AppConsts.*;
-import static org.vadarod.currencyratechecker.config.AppConsts.END_DAY;
 
 @Service
 public class DateService {

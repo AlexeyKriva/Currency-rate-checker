@@ -12,6 +12,6 @@ public class AppConsts {
     public static final int END_MONTH = LocalDate.now().getMonthValue();
     public static final int END_DAY = LocalDate.now().getDayOfMonth();
     public static final int NUMBER_OF_MONTHS = Month.values().length;
-    public static final String DATE_PATTERN = "yyyy-M-d";
+    public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final int PERIODICITY = 0;
 }
