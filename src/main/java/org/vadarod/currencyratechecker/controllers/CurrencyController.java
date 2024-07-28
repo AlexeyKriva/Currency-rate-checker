@@ -23,32 +23,12 @@ public class CurrencyController {
 
     @PostMapping("/load-currency-rates/{ondate}")
     public ResponseEntity<String> loadCurrencyRates(@PathVariable("ondate") String date) {
-        try {
-            LocalDate dateTime = LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_PATTERN));
-            boolean success = currencyService.loadCurrencyRates(dateTime.getYear(), dateTime.getMonth().getValue(), dateTime.getDayOfMonth());
-            if (success) {
-                return ResponseEntity.ok("Currency rates were successfully loaded for date: " + date);
-            } else {
-                return ResponseEntity.badRequest().body("Currency rates were not successfully loaded for date: " + date);
-            }
-        } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().body("Invalid date format. Expected format is yyyy-MM-dd");
-        }
+        return currencyService.loadCurrencyRatesResponse(date);
     }
 
     @GetMapping("/get-currency-rate/{ondate}/{curId}")
-    public ResponseEntity<CurrencyDto> getCurrencyRate(@PathVariable("ondate") String date,
-                                                       @PathVariable("curId") int curId) {
-        try {
-            LocalDate dateTime = LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_PATTERN));
-            CurrencyDto currencyDto = currencyService.findCurrencyDtoRateByDateAndCurId(dateTime, curId);
-            if (currencyDto != null) {
-                return ResponseEntity.ok(currencyDto);
-            } else {
-                return ResponseEntity.notFound().build();
-            }
-        } catch (DateTimeParseException e) {
-            return ResponseEntity.badRequest().build();
-        }
+    public ResponseEntity<CurrencyDto> findCurrencyDtoRate(@PathVariable("ondate") String date,
+                                                           @PathVariable("curId") int curId) {
+        return currencyService.findCurrencyDtoRateByDateAndCurIdResponse(date, curId);
     }
 }

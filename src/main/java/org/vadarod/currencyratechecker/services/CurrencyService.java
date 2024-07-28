@@ -1,6 +1,7 @@
 package org.vadarod.currencyratechecker.services;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.vadarod.currencyratechecker.clients.NbrbClient;
 import static org.vadarod.currencyratechecker.config.AppConsts.*;
@@ -36,7 +37,7 @@ public class CurrencyService {
                     }
                     List<CurrencyDto> currencyRatesFromNbrbApi =
                             nbrbClient.getCurrencyRatesByDate(formatDate(currentYear, currentMonth, currentDay),
-                            PERIODICITY);
+                                    PERIODICITY);
                     System.out.println(currencyRatesFromNbrbApi);
                     saveCurrencyDtoRates(currencyRatesFromNbrbApi);
                 }
@@ -45,12 +46,22 @@ public class CurrencyService {
         return true;
     }
 
-    public boolean loadCurrencyRates(int year, int month, int day) {
-        if (currencyRepository.existsCurrencyByDate(LocalDateTime.of(year, month, day, 0, 0, 0))) {
+    public ResponseEntity<String> loadCurrencyRatesResponse(String date) {
+        if (loadCurrencyRates(date)) {
+            return ResponseEntity.ok("Currency rates were successfully loaded for date: " + date);
+        } else {
+            return ResponseEntity.badRequest().body("Currency rates were not successfully loaded for date: " + date);
+        }
+    }
+
+    public boolean loadCurrencyRates(String date) {
+        LocalDate localDate = parseDateFromStringToLocalDate(date);
+        if (currencyRepository.existsCurrencyByDate(LocalDateTime.of(localDate.getYear(), localDate.getMonth(),
+                localDate.getDayOfMonth(), 0, 0, 0))) {
             return true;
         } else {
             List<CurrencyDto> currencyRatesFromNbrbApi =
-                    nbrbClient.getCurrencyRatesByDate(formatDate(year, month, day),
+                    nbrbClient.getCurrencyRatesByDate(date,
                             PERIODICITY);
             return saveCurrencyDtoRates(currencyRatesFromNbrbApi);
         }
@@ -91,8 +102,18 @@ public class CurrencyService {
         return true;
     }
 
-    public CurrencyDto findCurrencyDtoRateByDateAndCurId(LocalDate date, int curId) {
-        Optional<Currency> currency = currencyRepository.findCurrencyByDateAndCurId(date.atStartOfDay(), curId);
+    public ResponseEntity<CurrencyDto> findCurrencyDtoRateByDateAndCurIdResponse(String date, int curId) {
+        CurrencyDto currencyDto = findCurrencyDtoRateByDateAndCurId(date, curId);
+        if (currencyDto != null) {
+            return ResponseEntity.ok(currencyDto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    public CurrencyDto findCurrencyDtoRateByDateAndCurId(String date, int curId) {
+        LocalDate localDate = parseDateFromStringToLocalDate(date);
+        Optional<Currency> currency = currencyRepository.findCurrencyByDateAndCurId(localDate.atStartOfDay(), curId);
         if (currency.isPresent()) {
             CurrencyDto currencyDto = fromCurrencyToCurrencyDto(currency.get());
             return currencyDto;

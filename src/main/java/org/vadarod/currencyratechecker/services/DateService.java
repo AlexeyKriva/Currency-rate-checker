@@ -22,4 +22,8 @@ public class DateService {
     public static boolean hasDayPassed(int year, int month, int day) {
         return year == END_YEAR && month == END_MONTH && day > END_DAY;
     }
+
+    public static LocalDate parseDateFromStringToLocalDate(String date) {
+        return LocalDate.parse(date, DateTimeFormatter.ofPattern(DATE_PATTERN));
+    }
 }
