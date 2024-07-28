@@ -4,16 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import static org.vadarod.currencyratechecker.config.AppConsts.DATE_PATTERN;
-
 import org.vadarod.currencyratechecker.entities.CurrencyDto;
 import org.vadarod.currencyratechecker.services.CurrencyService;
-
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
-import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api", produces = "application/json")

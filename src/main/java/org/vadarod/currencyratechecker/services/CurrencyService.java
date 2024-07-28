@@ -9,6 +9,7 @@ import static org.vadarod.currencyratechecker.services.DateService.*;
 
 import org.vadarod.currencyratechecker.entities.Currency;
 import org.vadarod.currencyratechecker.entities.CurrencyDto;
+import org.vadarod.currencyratechecker.entities.CurrencyMapper;
 import org.vadarod.currencyratechecker.repositories.CurrencyRepository;
 
 import java.time.LocalDate;
@@ -23,6 +24,7 @@ public class CurrencyService {
     private CurrencyRepository currencyRepository;
     @Autowired
     private NbrbClient nbrbClient;
+    private static final CurrencyMapper CURRENCY_MAPPER = CurrencyMapper.INSTANCE;
 
     public boolean loadCurrencyRates() {
         for (int currentYear = START_YEAR; currentYear <= END_YEAR; currentYear++) {
@@ -67,31 +69,9 @@ public class CurrencyService {
         }
     }
 
-    private Currency fromCurrencyDtoToCurrency(CurrencyDto currencyDto) {
-        Currency currency = new Currency();
-        currency.setCurId(currencyDto.getCurId());
-        currency.setDate(currencyDto.getDate());
-        currency.setAbbreviation(currencyDto.getAbbreviation());
-        currency.setScale(currencyDto.getScale());
-        currency.setName(currencyDto.getName());
-        currency.setOfficialRate(currencyDto.getOfficialRate());
-        return currency;
-    }
-
-    private CurrencyDto fromCurrencyToCurrencyDto(Currency currency) {
-        CurrencyDto currencyDto = new CurrencyDto();
-        currencyDto.setDate(currency.getDate());
-        currencyDto.setAbbreviation(currency.getAbbreviation());
-        currencyDto.setScale(currency.getScale());
-        currencyDto.setName(currency.getName());
-        currencyDto.setOfficialRate(currency.getOfficialRate());
-        currencyDto.setCurId(currency.getCurId());
-        return currencyDto;
-    }
-
     public boolean saveCurrencyDtoRates(List<CurrencyDto> currencyRatesFromNbrbApi) {
         for (CurrencyDto currencyDto: currencyRatesFromNbrbApi) {
-            Currency currency = fromCurrencyDtoToCurrency(currencyDto);
+            Currency currency = CURRENCY_MAPPER.fromCurrencyDtoToCurrency(currencyDto);
             saveCurrencyRate(currency);
         }
         return !currencyRatesFromNbrbApi.isEmpty();
@@ -115,7 +95,7 @@ public class CurrencyService {
         LocalDate localDate = parseDateFromStringToLocalDate(date);
         Optional<Currency> currency = currencyRepository.findCurrencyByDateAndCurId(localDate.atStartOfDay(), curId);
         if (currency.isPresent()) {
-            CurrencyDto currencyDto = fromCurrencyToCurrencyDto(currency.get());
+            CurrencyDto currencyDto = CURRENCY_MAPPER.fromCurrencyToCurrencyDto(currency.get());
             return currencyDto;
         }
         return null;
